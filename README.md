@@ -1,8 +1,8 @@
-# LM Studio Structured Output Mirror
+# LM Studio/llama.cpp Structured Output Mirror
 
-**ELI5:** This is a tiny server that sits in front of your local LM Studio chat endpoint. When you ask a model for JSON, some open-source models ignore the “structured output” setting. This mirror quietly rewrites your request so the model follows your JSON Schema, then it checks the response and fixes the JSON if needed. You keep using the normal `/v1/chat/completions` API.
+It's been a known issue that structured output for GPT-OSS-20b and 120b is broken for LM Studio or anything that uses the GGUFs via llama.cpp. This is a (hopefully temporary) workaround that's a tiny server that sits in front of your local LM Studio chat endpoint and essentially moves the structured json schema from the response schema of the payload to the input prompt. 
 
-Humble truth: this is a pragmatic patch, not a silver bullet. It improves compliance for `gpt-oss-20b` and `gpt-oss-120b`. It cannot guarantee perfect output for every prompt or schema.
+While this mirror is running, you can use an alternate endpoint port 1235 (E.g, "http://localhost:1235/v1/chat/completions") to ask for a JSON output. This mirror rewrites your request so the model follows your JSON Schema, then it checks the response and fixes the JSON if needed. This is a pragmatic patch, and is not perfect. It brings GPT-OSS-20b JSON compliance from 0% gibberish to about 90% via the default test in the [LLM Structured JSON Tester](https://github.com/shihanqu/LLM-Structured-JSON-Tester)
 
 ---
 
@@ -20,7 +20,7 @@ Humble truth: this is a pragmatic patch, not a silver bullet. It improves compli
 
 ## When to use this
 
-- You rely on **structured JSON** from OSS chat models in LM Studio.
+- You rely on **structured JSON** from OSS chat models in LM Studio, Ollama, llama.cpp
 - Your client already sends `response_format: { type: "json_schema", json_schema: { ... } }`.
 - You want to keep your client code unchanged.
 
