@@ -1,6 +1,6 @@
 # LM Studio/llama.cpp Structured Output Mirror
 
-It's been a known issue that structured output for GPT-OSS-20b and 120b is broken for LM Studio or anything that uses the GGUFs via llama.cpp. This is a (hopefully temporary) workaround that's a tiny server that sits in front of your local LM Studio chat endpoint and essentially moves the structured json schema from the response schema of the payload to the input prompt. 
+It's been a [known issue](https://github.com/lmstudio-ai/lmstudio-bug-tracker/issues/1105#issuecomment-3494913885) that structured output for GPT-OSS-20b and 120b is broken for LM Studio or anything that uses the GGUFs via llama.cpp. This is a (hopefully temporary) workaround that's a tiny server that sits in front of your local LM Studio chat endpoint and essentially moves the structured json schema from the response schema of the payload to the input prompt. 
 
 While this mirror is running, you can use an alternate endpoint port 1235 (E.g, "http://localhost:1235/v1/chat/completions") to ask for a JSON output. This mirror rewrites your request so the model follows your JSON Schema, then it checks the response and fixes the JSON if needed. This is a pragmatic patch, and is not perfect. It brings GPT-OSS-20b JSON compliance from 0% gibberish to about 90% via the default test in the [LLM Structured JSON Tester](https://github.com/shihanqu/LLM-Structured-JSON-Tester)
 
