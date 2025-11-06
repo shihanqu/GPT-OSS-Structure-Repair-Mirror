@@ -163,12 +163,23 @@ async def mirror_chat(request: Request):
 
     async with httpx.AsyncClient(timeout=TIMEOUT_SECS) as client:
         if payload.get("stream"):
-            if need_transform and not ALLOW_STREAM_REPAIR:
-                # Pass-through stream after transform. No validation in stream mode.
+            if not need_transform:
                 upstream = await client.stream("POST", UPSTREAM_URL, json=payload)
+
                 async def iterator():
                     async for chunk in upstream.aiter_bytes():
                         yield chunk
+
+                headers = {"Content-Type": upstream.headers.get("Content-Type", "text/event-stream")}
+                return StreamingResponse(iterator(), headers=headers, status_code=upstream.status_code)
+
+            if need_transform and not ALLOW_STREAM_REPAIR:
+                upstream = await client.stream("POST", UPSTREAM_URL, json=payload)
+
+                async def iterator():
+                    async for chunk in upstream.aiter_bytes():
+                        yield chunk
+
                 headers = {"Content-Type": upstream.headers.get("Content-Type", "text/event-stream")}
                 return StreamingResponse(iterator(), headers=headers, status_code=upstream.status_code)
 
